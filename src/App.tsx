@@ -31,7 +31,7 @@ export default function App() {
         onComplete={finishIntro}
         interaction={interaction}
       />
-      <div inert={introActive}>
+      <div className={introActive || hasFinished ? "portfolio-page intro-visible" : "portfolio-page"} inert={introActive}>
         <a href="#main" className="skip-link">
           Skip to content
         </a>

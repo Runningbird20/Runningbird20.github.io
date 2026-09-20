@@ -19,6 +19,7 @@
   box-sizing: border-box;
 }
 html {
+  scrollbar-gutter: stable;
   scroll-behavior: smooth;
   scroll-padding-top: 104px;
 }
@@ -1255,26 +1256,30 @@ img {
   }
 }
 
-/* The boot layer becomes a static, non-interactive hero decoration after entry. */
+/* One opaque canvas owns the portal exterior; the page remains in normal flow. */
 .boot-sequence {
   position: fixed;
   inset: 0;
   z-index: 60;
-  pointer-events: none;
-  overflow: hidden;
+  isolation: isolate;
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.portal-surface {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
 }
 .boot-interface {
   position: absolute;
   inset: 0;
-  pointer-events: auto;
   display: grid;
   place-items: center;
 }
-.boot-backdrop {
-  position: absolute;
-  inset: 0;
-  background: #080a0a;
+.intro-visible .hero-content {
+  animation: none;
 }
 .terminal-panel {
   position: relative;
@@ -1356,31 +1361,6 @@ img {
 .boot-skip:hover {
   background: #26332b;
 }
-.boot-particles {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-.boot-particle {
-  position: absolute;
-  top: 0;
-  left: 0;
-  opacity: 0;
-  font-size: 16px;
-  will-change: transform, opacity;
-}
-.boot-settled {
-  position: absolute;
-  inset: 0 0 auto;
-  height: 650px;
-  z-index: 0;
-  mask-image: linear-gradient(#000 65%, transparent);
-}
-.boot-settled .boot-particle {
-  opacity: 0.22;
-  will-change: auto;
-  font-size: 10px;
-}
 #main,
 .footer {
   position: relative;
@@ -1409,12 +1389,6 @@ img {
   }
   .access-title {
     letter-spacing: -1px;
-  }
-  .boot-settled {
-    height: 500px;
-  }
-  .boot-settled .boot-particle:nth-child(n + 25) {
-    display: none;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -1452,12 +1426,6 @@ img {
 #main:focus {
   outline: none;
 }
-.boot-settled .boot-particle {
-  left: var(--particle-x);
-  top: var(--particle-y);
-  color: var(--particle-color);
-}
-
 .access-stage {
   position: absolute;
   inset: 0;
