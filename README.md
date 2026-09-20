@@ -1,6 +1,6 @@
 # Software & Security Engineering Portfolio
 
-A responsive, dark personal portfolio for a Georgia Tech student. Built with React, TypeScript, Vite, Tailwind CSS v4, and Lucide icons. No backend, tracking, external fonts, or runtime services are required.
+A responsive, dark personal portfolio for a Georgia Tech student. Built with React, TypeScript, Vite, Tailwind CSS v4, and Lucide icons. GSAP powers the optional entry sequence. No backend, tracking, external fonts, or runtime services are required.
 
 ## Run locally
 
@@ -63,11 +63,11 @@ Add an object to the `projects` array; no component edits needed:
 }
 ```
 
-The decorative illustrations are CSS and Lucide icons, with no stock images or extra animation dependencies. An optional image replaces the illustration. Long descriptions and tags wrap naturally.
+The decorative illustrations are CSS and Lucide icons, with no stock images. An optional image replaces the illustration. Long descriptions and tags wrap naturally.
 
 ### Activities and hackathons
 
-`activities: []` hides the section. Add actual entries with `name`, `role`, `date`, and `description`. The config contains a commented example for JPMorgan Chase Code for Good; participation is not assumed.
+A clearly labeled activity example is included. `activities: []` hides the section. Add actual entries with `name`, `role`, `date`, and `description`. The config contains a commented example for JPMorgan Chase Code for Good; participation is not assumed.
 
 ## GitHub Pages deployment
 
@@ -87,3 +87,20 @@ If you later use a project repository hosted under `/repository-name/`, update V
 Includes semantic sections, a skip link, one primary heading, keyboard focus rings, labeled icon links, Escape-to-close mobile navigation, and reduced-motion support. The mobile menu uses normal document navigation rather than trapping keyboard focus.
 
 After content edits, run `npm run build`, preview at mobile and desktop widths, check each destination, and ensure your resume and project images load. No secrets or environment configuration are needed; all portfolio data is public. `.env` files are ignored.
+
+## Animation foundation and intro (phases 3–5)
+
+The first visit in a tab plays a roughly nine-second terminal sequence: character-by-character typing with a command-only inline cursor and a 1.5-second authentication pause, simulated authentication, a cleared screen with centered pixel-art ACCESS GRANTED, RGB split layers and stepped character distortion, and colored character particles settling into the hero. This is decorative storytelling, not real authentication or a network/security check.
+
+- Click **SKIP INTRO**, press **Escape**, or activate the focused skip button with Enter/Space to open the portfolio immediately.
+- Completion is remembered in `sessionStorage` for the current tab session. Internal anchors never restart it. Direct section links bypass it.
+- Reduced-motion visitors get the portfolio immediately, without the terminal or particles. Turning reduced motion on during playback also finishes immediately.
+- The portfolio remains mounted throughout. While the intro is active it is inert; completion restores scrolling and moves focus to the main content.
+- Resize/orientation changes finish the sequence safely. A watchdog set to the timeline duration plus 1.5 seconds prevents a stuck intro. Blocked session storage does not prevent access (but may allow replay on reload).
+- Touch devices, Save-Data connections, and devices with four or fewer logical cores use 24 particles instead of 56. No WebGL or perpetual animation loop is needed for these phases.
+
+`src/lib/animation.ts` centralizes timing and session helpers. `src/hooks/useInteraction.ts` exposes mutable scroll progress, viewport size, cursor coordinates/velocity, pointer state, device capabilities, reduced motion, and performance mode without React rerenders per pointer event. Its listeners and scheduled work clean up on unmount. `src/effects/BootSequence.tsx` owns a scoped, cleaned-up GSAP timeline. Later effects can consume the same interaction ref; WebGL, custom cursor physics, and other phases 6+ are intentionally deferred.
+
+For a fresh intro preview, clear the `portfolio:intro-complete:v1` session-storage key in browser developer tools and reload without a URL hash. To disable the intro entirely, initialize `introActive` to `false` in `App.tsx`; the portfolio works independently.
+
+Run `npm run lint` for ESLint and React Hooks checks. CI runs lint before the production build. The current implementation has been browser-checked at 320, 390, 768, 1024, and 1440 pixels, including keyboard skipping, session completion, deep links, reduced-motion changes, focus restoration, and automated accessibility checks. Physical-device performance can vary.
