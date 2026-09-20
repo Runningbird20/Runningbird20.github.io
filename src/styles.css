@@ -1254,3 +1254,291 @@ img {
     transition: none !important;
   }
 }
+
+/* The boot layer becomes a static, non-interactive hero decoration after entry. */
+.boot-sequence {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  overflow: hidden;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.boot-interface {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+  display: grid;
+  place-items: center;
+}
+.boot-backdrop {
+  position: absolute;
+  inset: 0;
+  background: #080a0a;
+}
+.terminal-panel {
+  position: relative;
+  width: min(680px, calc(100% - 48px));
+  color: #d5dcd7;
+}
+.terminal-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #303733;
+  font-size: 10px;
+  letter-spacing: 1.7px;
+  color: #9da8a1;
+}
+.boot-status {
+  padding-top: 28px;
+  min-height: 225px;
+  font-size: 13px;
+  line-height: 2.2;
+}
+.boot-line {
+  min-height: 1lh;
+  white-space: pre;
+}
+.boot-character {
+  display: none;
+}
+.boot-ok {
+  color: #e7ece9;
+}
+.boot-cursor {
+  display: none;
+  width: 0.6em;
+  height: 1em;
+  vertical-align: -0.15em;
+  background: currentColor;
+  animation: terminal-blink 0.8s steps(2, end) infinite;
+}
+.access-title {
+  font-size: clamp(27px, 6vw, 64px);
+  letter-spacing: -2px;
+  line-height: 1.2;
+  margin-top: 15px;
+  font-weight: 600;
+  opacity: 0;
+  white-space: nowrap;
+}
+.access-glyph {
+  display: inline-block;
+}
+.terminal-caption {
+  color: #929f96;
+  font-size: 10px;
+  line-height: 1.6;
+  margin-top: 25px;
+}
+.boot-skip {
+  position: absolute;
+  right: 36px;
+  bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  background: #141a16;
+  border: 1px solid #46524a;
+  border-radius: 5px;
+  padding: 14px 18px;
+  font-size: 11px;
+  color: #e3eae5;
+  cursor: pointer;
+  min-height: 44px;
+}
+.boot-skip span {
+  color: #a6e3c5;
+  font-size: 10px;
+}
+.boot-skip:hover {
+  background: #26332b;
+}
+.boot-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.boot-particle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  font-size: 16px;
+  will-change: transform, opacity;
+}
+.boot-settled {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 650px;
+  z-index: 0;
+  mask-image: linear-gradient(#000 65%, transparent);
+}
+.boot-settled .boot-particle {
+  opacity: 0.22;
+  will-change: auto;
+  font-size: 10px;
+}
+#main,
+.footer {
+  position: relative;
+}
+@keyframes terminal-blink {
+  50% {
+    opacity: 0.15;
+  }
+}
+@media (max-width: 767px) {
+  .terminal-panel {
+    width: calc(100% - 36px);
+  }
+  .terminal-label {
+    font-size: 8px;
+    letter-spacing: 0.8px;
+  }
+  .boot-status {
+    font-size: 10px;
+    line-height: 2.6;
+    min-height: 215px;
+  }
+  .boot-skip {
+    right: 18px;
+    bottom: 22px;
+  }
+  .access-title {
+    letter-spacing: -1px;
+  }
+  .boot-settled {
+    height: 500px;
+  }
+  .boot-settled .boot-particle:nth-child(n + 25) {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .boot-sequence {
+    display: none;
+  }
+}
+
+@media (max-height: 560px) {
+  .boot-interface {
+    padding-bottom: 68px;
+  }
+  .terminal-label {
+    padding-bottom: 10px;
+  }
+  .boot-status {
+    min-height: 0;
+    padding-top: 12px;
+    font-size: 10px;
+    line-height: 1.8;
+  }
+  .access-title {
+    font-size: 28px;
+    margin-top: 8px;
+  }
+  .terminal-caption {
+    margin-top: 10px;
+  }
+  .boot-skip {
+    bottom: 12px;
+  }
+}
+
+/* Main is a programmatic focus destination, not an interactive control. */
+#main:focus {
+  outline: none;
+}
+.boot-settled .boot-particle {
+  left: var(--particle-x);
+  top: var(--particle-y);
+  color: var(--particle-color);
+}
+
+.access-stage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  pointer-events: none;
+}
+.access-stage .access-title {
+  position: relative;
+  margin: 0;
+  opacity: 1;
+  color: #d3ffe3;
+  line-height: 1;
+  filter: none;
+}
+.access-pixels,
+.access-echo {
+  display: flex;
+  gap: clamp(3px, 0.65vw, 9px);
+}
+.access-glyph,
+.access-echo-glyph {
+  display: block;
+  width: clamp(12px, 4.5vw, 48px);
+  flex-shrink: 0;
+}
+.access-glyph svg,
+.access-echo-glyph svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.access-echo {
+  position: absolute;
+  inset: 0;
+}
+.echo-cyan {
+  color: #63d6e5;
+  clip-path: polygon(
+    0 15%,
+    100% 15%,
+    100% 32%,
+    0 32%,
+    0 64%,
+    100% 64%,
+    100% 75%,
+    0 75%
+  );
+}
+.echo-magenta {
+  color: #c779d6;
+  clip-path: polygon(
+    0 37%,
+    100% 37%,
+    100% 51%,
+    0 51%,
+    0 83%,
+    100% 83%,
+    100% 95%,
+    0 95%
+  );
+}
+.access-fragments {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(850px, 94vw);
+  height: 170px;
+  transform: translate(-50%, -50%);
+}
+.access-fragments i {
+  position: absolute;
+  width: 7px;
+  height: 5px;
+  background: #63d6e5;
+  opacity: 0.5;
+}
+.access-fragments i:nth-child(2n) {
+  background: #c779d6;
+  height: 3px;
+}
+
+.access-echo, .access-fragments { opacity: 0; }

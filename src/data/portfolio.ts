@@ -115,5 +115,14 @@ export const portfolio: Portfolio = {
   },
   // Optional: add real activities here. An empty array hides the entire section.
   // Example: { name: 'JPMorgan Chase Code for Good', role: 'Your role', date: 'Year', description: 'Describe your actual contribution.' }
-  activities: [],
+  activities: [
+    {
+      name: "Engineering activity / hackathon",
+      role: "Your role",
+      date: "Add date",
+      description:
+        "Replace with an event you attended and explain your contribution, team, and what you built or learned.",
+      placeholder: true,
+    },
+  ],
 };

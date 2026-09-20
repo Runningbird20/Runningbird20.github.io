@@ -1,3 +1,7 @@
+import { useCallback, useLayoutEffect, useState } from "react";
+import { BootSequence } from "./effects/BootSequence";
+import { useInteraction } from "./hooks/useInteraction";
+import { shouldShowIntro } from "./lib/animation";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
 import { About } from "./components/About";
@@ -9,24 +13,42 @@ import { Activities } from "./components/Activities";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
 export default function App() {
+  const interaction = useInteraction();
+  const [introActive, setIntroActive] = useState(shouldShowIntro);
+  const [hasFinished, setHasFinished] = useState(false);
+  const finishIntro = useCallback(() => {
+    setIntroActive(false);
+    setHasFinished(true);
+  }, []);
+  useLayoutEffect(() => {
+    if (hasFinished)
+      document.getElementById("main")?.focus({ preventScroll: true });
+  }, [hasFinished]);
   return (
     <>
-      <a href="#main" className="skip-link">
-        Skip to content
-      </a>
-      <Navbar />
-      <main id="main" className="container" tabIndex={-1}>
-        <Hero />
-        <About />
-        <Experience />
-        <Projects />
-        <Skills />
-        <Education />
-        <Activities />
-        <Contact />
-      </main>
-      <div className="container">
-        <Footer />
+      <BootSequence
+        active={introActive}
+        onComplete={finishIntro}
+        interaction={interaction}
+      />
+      <div inert={introActive}>
+        <a href="#main" className="skip-link">
+          Skip to content
+        </a>
+        <Navbar />
+        <main id="main" className="container" tabIndex={-1}>
+          <Hero />
+          <About />
+          <Projects />
+          <Experience />
+          <Skills />
+          <Education />
+          <Activities />
+          <Contact />
+        </main>
+        <div className="container">
+          <Footer />
+        </div>
       </div>
     </>
   );
