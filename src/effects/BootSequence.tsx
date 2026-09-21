@@ -1,9 +1,11 @@
 import { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { AccessTitle } from "./AccessTitle";
+import { paintPortal, portalTiming } from "./portalScene";
+import type { PortalLetter, PortalState } from "./portalScene";
 import { animation, rememberIntro } from "../lib/animation";
 import type { InteractionState } from "../hooks/useInteraction";
-import type { CSSProperties, RefObject } from "react";
+import type { RefObject } from "react";
 const lines = [
   "> initializing system...",
   "[OK] establishing secure connection",
@@ -21,20 +23,15 @@ interface Props {
 }
 export function BootSequence({ active, onComplete, interaction }: Props) {
   const root = useRef<HTMLDivElement>(null);
+  const surface = useRef<HTMLCanvasElement>(null);
   const skip = useRef<HTMLButtonElement>(null);
   const finish = useRef<() => void>(() => {});
   useLayoutEffect(() => {
-    if (!active || !root.current) return;
+    if (!active || !root.current || !surface.current) return;
     const element = root.current;
+    const canvas = surface.current;
+    const ctx = canvas.getContext("2d");
     let complete = false;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    skip.current?.focus({ preventScroll: true });
-    const particles = Array.from(
-      element.querySelectorAll<HTMLElement>(".boot-particle"),
-    );
-    const low = interaction.current.device.performanceMode === "low";
-    const count = low ? 24 : particles.length;
     let timeline: gsap.core.Timeline;
     const done = () => {
       if (complete) return;
@@ -44,8 +41,39 @@ export function BootSequence({ active, onComplete, interaction }: Props) {
       onComplete();
     };
     finish.current = done;
+    if (!ctx) {
+      const frame = requestAnimationFrame(done);
+      return () => cancelAnimationFrame(frame);
+    }
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    skip.current?.focus({ preventScroll: true });
+    const scene: PortalState = { time: -1, opening: 0, travel: 0 };
+    let letters: PortalLetter[] = [];
+    let width = 0;
+    let height = 0;
+    const draw = () => paintPortal(ctx, width, height, scene, letters);
+    const resize = () => {
+      const box = canvas.getBoundingClientRect();
+      if (box.width <= 0 || box.height <= 0) return;
+      width = box.width;
+      height = box.height;
+      const maxRatio = interaction.current.device.performanceMode === "low" ? 1 : 1.5;
+      const ratio = Math.min(window.devicePixelRatio || 1, maxRatio);
+      canvas.width = Math.max(1, Math.round(width * ratio));
+      canvas.height = Math.max(1, Math.round(height * ratio));
+      ctx.setTransform(canvas.width / width, 0, 0, canvas.height / height, 0, 0);
+      draw();
+    };
+    // Paint the initial opaque frame before the browser can display the page.
+    resize();
     const context = gsap.context(() => {
-      timeline = gsap.timeline({ onComplete: done });
+      timeline = gsap.timeline({
+        onComplete: done,
+        onUpdate: () => {
+          if (scene.time >= 0) draw();
+        },
+      });
       timeline.fromTo(
         ".terminal-label",
         { opacity: 0.88 },
@@ -72,8 +100,8 @@ export function BootSequence({ active, onComplete, interaction }: Props) {
       const clearAt = position + animation.authenticationPause;
       const accessAt = clearAt + 0.28;
       const glitchAt = accessAt + animation.readableHold;
-      const burstAt = accessAt + animation.burstDelay;
-      const finishAt = burstAt + animation.transitionDuration;
+      const portalAt = accessAt + animation.portalDelay;
+      const finishAt = portalAt + animation.transitionDuration;
       timeline.set(".boot-cursor", { display: "none" }, accessAt);
       timeline.to(".terminal-panel", { opacity: 0, duration: 0.22 }, clearAt);
       timeline.to(".access-stage", { opacity: 1, duration: 0.08 }, accessAt);
@@ -132,66 +160,40 @@ export function BootSequence({ active, onComplete, interaction }: Props) {
         },
         glitchAt + 0.02,
       );
-      timeline.to(
-        ".access-stage",
-        { opacity: 0, scale: 1.15, duration: 0.22 },
-        burstAt,
-      );
-      // Seed actual terminal characters at their measured text positions.
-      const sources = Array.from(
-        element.querySelectorAll<HTMLElement>(".boot-line, .access-glyph"),
-      );
-      particles.forEach((particle, i) => {
-        if (i >= count) {
-          gsap.set(particle, { display: "none" });
-          return;
-        }
-        const source = sources[i % sources.length];
-        const box = source.getBoundingClientRect();
-        const text = source.dataset.character || source.textContent || "01";
-        particle.textContent = text[(i * 7) % text.length].trim() || "·";
-        gsap.set(particle, {
-          x: box.left + box.width * ((i % 7) / 7),
-          y: box.top,
-          opacity: 0,
+      timeline.set(".access-glyph", { x: 0, y: 0, scale: 1 }, portalAt);
+      timeline.call(() => {
+        // Read geometry once at the handover; animation frames only draw pixels.
+        letters = Array.from(element.querySelectorAll<HTMLElement>(".access-glyph")).map((glyph) => {
+          const box = glyph.getBoundingClientRect();
+          return {
+            x: (box.left + box.width / 2) / width,
+            y: (box.top + box.height / 2) / height,
+            width: box.width / width,
+            height: box.height / height,
+            pixels: Array.from(glyph.querySelectorAll("rect")).map((pixel) => ({
+              x: Number(pixel.getAttribute("x")),
+              y: Number(pixel.getAttribute("y")),
+            })),
+          };
         });
-        const angle = i * 2.39996;
-        const color = ["#a6e3c5", "#b6a0ff", "#80caff", "#f2c18c"][i % 4];
-        timeline.to(
-          particle,
-          {
-            opacity: 0.85,
-            color,
-            x: innerWidth / 2 + Math.cos(angle) * innerWidth * 0.58,
-            y: innerHeight / 2 + Math.sin(angle) * innerHeight * 0.55,
-            rotation: i % 2 ? 70 : -70,
-            duration: 0.48,
-            ease: "power2.out",
-          },
-          burstAt,
-        );
-        timeline.to(
-          particle,
-          {
-            x: `${55 + ((i * 17) % 42)}vw`,
-            y: `${110 + ((i * 43) % 390)}px`,
-            rotation: 0,
-            scale: 0.6,
-            opacity: 0.22,
-            duration: 0.62,
-            ease: animation.ease,
-          },
-          burstAt + 0.48,
-        );
-      });
-      timeline.to(
-        ".terminal-panel",
-        { opacity: 0, scale: 1.035, duration: 0.22 },
-        burstAt,
-      );
-      timeline.to(".boot-backdrop", { opacity: 0, duration: 0.7 }, burstAt);
+      }, [], portalAt);
+      timeline.set(".access-stage, .terminal-panel", { visibility: "hidden" }, portalAt);
+      timeline.fromTo(scene, { time: 0 }, {
+        time: animation.transitionDuration,
+        duration: animation.transitionDuration,
+        ease: "none",
+        immediateRender: false,
+      }, portalAt);
+      const open = (opening: number, duration: number, at: number) => {
+        timeline.to(scene, { opening, duration, ease: "sine.inOut" }, portalAt + at);
+      };
+      const openAt = portalTiming.openAt;
+      open(1, 1, openAt);
+      open(0.92, 0.35, openAt + 1);
+      open(1.035, 0.35, openAt + 1.35);
+      open(1, 0.3, openAt + 1.7);
+      timeline.to(scene, { travel: 1, duration: 1.25, ease: "power3.in" }, portalAt + openAt + 2);
       timeline.to(".boot-skip", { opacity: 0, duration: 0.2 }, finishAt - 0.35);
-      timeline.call(() => {}, [], finishAt);
     }, element);
     const key = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -207,13 +209,10 @@ export function BootSequence({ active, onComplete, interaction }: Props) {
     const preference = () => {
       if (reduce.matches) done();
     };
-    const resize = () => done(); // Finish cleanly instead of using stale particle geometry.
     window.addEventListener("keydown", key);
     window.addEventListener("resize", resize);
     reduce.addEventListener("change", preference);
-    const watchdog = setTimeout(done, (timeline!.duration() + 1.5) * 1000);
     return () => {
-      clearTimeout(watchdog);
       context.revert();
       window.removeEventListener("keydown", key);
       window.removeEventListener("resize", resize);
@@ -221,19 +220,11 @@ export function BootSequence({ active, onComplete, interaction }: Props) {
       document.body.style.overflow = previousOverflow;
     };
   }, [active, onComplete, interaction]);
+  if (!active) return null;
   return (
-    <div
-      ref={root}
-      className={`boot-sequence ${active ? "boot-active" : "boot-settled"}`}
-    >
-      {active && (
-        <div
-          className="boot-interface"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Portfolio introduction"
-        >
-          <div className="boot-backdrop" />
+    <div ref={root} className="boot-sequence">
+      <canvas ref={surface} className="portal-surface" aria-hidden="true" />
+      <div className="boot-interface" role="dialog" aria-modal="true" aria-label="Portfolio introduction">
           <div className="terminal-panel">
             <p className="terminal-label">
               PORTFOLIO / SYSTEM INITIALIZATION <span>01</span>
@@ -257,41 +248,13 @@ export function BootSequence({ active, onComplete, interaction }: Props) {
               An introduction, not a login. No credentials required.
             </p>
           </div>
-          <AccessTitle />
-          <p className="sr-only" role="status">
-            Opening portfolio. Press Escape or use Skip Intro to continue
-            immediately.
-          </p>
-          <button
-            ref={skip}
-            className="boot-skip"
-            onClick={() => finish.current()}
-          >
-            SKIP INTRO <span>ESC ↗</span>
-          </button>
-        </div>
-      )}
-      <div className="boot-particles" aria-hidden="true">
-        {Array.from({ length: 56 }, (_, i) => (
-          <span
-            className="boot-particle"
-            key={i}
-            style={
-              {
-                "--particle-x": `${55 + ((i * 17) % 42)}%`,
-                "--particle-y": `${110 + ((i * 43) % 390)}px`,
-                "--particle-color": [
-                  "#a6e3c5",
-                  "#b6a0ff",
-                  "#80caff",
-                  "#f2c18c",
-                ][i % 4],
-              } as CSSProperties
-            }
-          >
-            ·
-          </span>
-        ))}
+        <AccessTitle />
+        <p className="sr-only" role="status">
+          Opening portfolio. Press Escape or use Skip Intro to continue immediately.
+        </p>
+        <button ref={skip} className="boot-skip" onClick={() => finish.current()}>
+          SKIP INTRO <span>ESC ↗</span>
+        </button>
       </div>
     </div>
   );

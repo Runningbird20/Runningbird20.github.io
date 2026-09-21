@@ -6,7 +6,7 @@ Build an experimental, highly interactive developer portfolio that showcases sof
 
 The experience should follow this progression:
 
-**Terminal Boot → Authentication → ACCESS GRANTED → Color Explosion → Interactive Hero → Scroll Journey → Projects → Experience → Skills → Contact**
+**Terminal Boot → Authentication → ACCESS GRANTED → Color Portal → Interactive Hero → Scroll Journey → Projects → Experience → Skills → Contact**
 
 The website should feel alive. Cursor movement, clicks, scrolling, velocity, and hover states should influence the interface.
 
@@ -201,21 +201,22 @@ The transition should feel dramatic without taking too long.
 
 Create a persistent interactive visual environment.
 
-Potential implementation:
+Implementation: a lightweight Canvas 2D particle field and CSS color fields, using the portal's cyan (`#63d6e5`) and magenta (`#c779d6`). No additional graphics library needed.
 
-**React Three Fiber + Three.js + GLSL**
-
-- [ ] Create WebGL canvas
-- [ ] Create particle system
-- [ ] Create subtle background geometry
-- [ ] Add depth
-- [ ] Add parallax
-- [ ] Add procedural movement
-- [ ] Connect some nearby particles
-- [ ] Make environment react to scroll
-- [ ] Make environment react to cursor
-- [ ] Make environment react to clicks
-- [ ] Implement smooth transitions between sections
+- [ ] WebGL canvas — deferred; Canvas 2D meets current visual requirements
+- [x] Create particle system
+- [x] Create subtle background geometry
+- [x] Add depth
+- [x] Add parallax
+- [x] Add procedural movement
+- [x] Connect some nearby particles
+- [x] Make environment react to scroll
+- [x] Make environment react to cursor
+- [x] Make environment react to clicks on non-interactive areas
+- [x] Implement smooth transitions between sections through continuous scroll progress
+- [x] Apply cyan and magenta as the site's main accent colors
+- [x] Add pause control and a static reduced-motion version
+- [x] Pause work in hidden tabs and reduce particle density on mobile
 
 The background should evolve throughout the portfolio rather than remaining identical.
 
