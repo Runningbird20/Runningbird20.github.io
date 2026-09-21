@@ -12,6 +12,11 @@ export interface PortalLetter {
   pixels: { x: number; y: number }[];
 }
 
+export const portalTiming = {
+  collapseDuration: 0.85,
+  openAt: 1.05,
+} as const;
+
 const TAU = Math.PI * 2;
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 
@@ -37,7 +42,7 @@ export function paintPortal(
   state: PortalState,
   letters: PortalLetter[] = [],
 ) {
-  const { x, y, radius, restingRadius } = portalGeometry(width, height, state);
+  const { x, y, radius } = portalGeometry(width, height, state);
   ctx.save();
   ctx.globalCompositeOperation = "source-over";
   ctx.globalAlpha = 1;
@@ -59,7 +64,7 @@ export function paintPortal(
     // Moving each radius with the aperture pushes the entire current outward.
     const spacing = Math.max(width, height) * 0.725 / 29;
     ctx.lineWidth = 1.6;
-    ctx.globalAlpha = clamp(state.time / 0.45);
+    ctx.globalAlpha = clamp((state.time - 0.7) / 0.45);
     for (let i = 0; i < 29; i++) {
       const arcRadius = radius + 12 + (i + 1) * spacing;
       const angle = -Math.PI / 4 - i * TAU * 0.1 / 5.5 - state.time * TAU / 5.5;
@@ -73,26 +78,21 @@ export function paintPortal(
       ctx.stroke();
     }
 
-    // The same bitmap letters as the title join the exterior current. They
-    // share its clipping, so no text fragments can obscure the revealed page.
+    // Collapse the complete title into one point before the aperture opens.
+    // Keeping every glyph on the same scale preserves the words as they shrink.
+    const collapse = clamp(state.time / portalTiming.collapseDuration);
+    const remaining = 1 - collapse * collapse;
     letters.forEach((letter, i) => {
-      const t = clamp((state.time - i * 0.015) / 1.55);
-      if (t >= 1 || letter.pixels.length === 0) return;
+      if (remaining <= 0 || letter.pixels.length === 0) return;
       const dx = letter.x * width - x;
       const dy = letter.y * height - y;
-      const distance = Math.hypot(dx, dy);
-      const angle = Math.atan2(dy, dx) - t * Math.PI * 1.15;
-      const drift = Math.sin(t * Math.PI / 2);
-      const orbit = Math.max(
-        distance + (restingRadius * 1.8 - distance) * drift,
-        radius + letter.width * width * 0.8,
-      );
       ctx.save();
-      ctx.translate(x + Math.cos(angle) * orbit, y + Math.sin(angle) * orbit);
-      ctx.rotate(-t * Math.PI * 1.2);
-      ctx.scale(1 + t * 1.5, 1 - t * 0.8);
-      ctx.globalAlpha = 1 - t * t;
-      ctx.fillStyle = t < 0.12 ? "#d3ffe3" : i % 2 ? "#c779d6" : "#63d6e5";
+      ctx.translate(x + dx * remaining, y + dy * remaining);
+      ctx.scale(remaining, remaining);
+      ctx.globalAlpha = 1;
+      const start = [211, 255, 227];
+      const target = i % 2 ? [199, 121, 214] : [99, 214, 229];
+      ctx.fillStyle = `rgb(${start.map((value, channel) => Math.round(value + (target[channel] - value) * collapse)).join(",")})`;
       const pixelWidth = letter.width * width / 5;
       const pixelHeight = letter.height * height / 7;
       for (const pixel of letter.pixels) {
@@ -120,8 +120,9 @@ export function paintPortal(
     }
     ctx.restore();
 
-    // A brief light at the center opens into the rim. No whole-surface fades.
-    const seedOpacity = clamp(state.time / 0.15) * (1 - clamp((state.time - 0.25) / 0.2));
+    // The collapsed letters charge the dot; its light persists until the rim opens.
+    const seedOpacity = clamp((state.time - 0.35) / 0.5)
+      * (1 - clamp((state.time - portalTiming.openAt) / 0.25));
     if (seedOpacity > 0) {
       const seed = ctx.createRadialGradient(x, y, 0, x, y, 34);
       seed.addColorStop(0, "#ffffff");

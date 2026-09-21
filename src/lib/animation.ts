@@ -6,7 +6,7 @@ export const animation = {
   authenticationPause: 1.5,
   readableHold: 0.9,
   portalDelay: 2.0,
-  transitionDuration: 3.8,
+  transitionDuration: 4.55,
   ease: "power3.out",
 } as const;
 export function introAlreadySeen() {

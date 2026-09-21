@@ -3,8 +3,8 @@ import test from "node:test";
 import { createCanvas } from "@napi-rs/canvas";
 import { paintPortal, portalGeometry } from "../src/effects/portalScene.ts";
 
-// Real bitmap-shaped glyphs straddle the moving opening while joining the
-// current. An empty letter list would miss regressions in that drawing layer.
+// Real bitmap-shaped glyphs collapse into the seed before the opening appears.
+// An empty letter list would miss regressions in that drawing layer.
 const glyphPixels = ["01110", "10001", "10001", "11111", "10001", "10001", "10001"]
   .flatMap((row, y) => Array.from(row).flatMap((pixel, x) => pixel === "1" ? [{ x, y }] : []));
 const letters = Array.from({ length: 13 }, (_, i) => ({
@@ -18,16 +18,17 @@ const letters = Array.from({ length: 13 }, (_, i) => ({
 const phases = [
   ["terminal cover", { time: -1, opening: 0, travel: 0 }],
   ["portal start", { time: 0, opening: 0, travel: 0 }],
-  ["bright seed", { time: 0.2, opening: 0, travel: 0 }],
-  ["seed becomes opening", { time: 0.35, opening: 0.015, travel: 0 }],
-  ["letters join current", { time: 0.7, opening: 0.55, travel: 0 }],
-  ["open circle", { time: 1.3, opening: 1, travel: 0 }],
-  ["ebb contraction", { time: 1.65, opening: 0.92, travel: 0 }],
-  ["ebb expansion", { time: 2, opening: 1.035, travel: 0 }],
-  ["ebb settles", { time: 2.3, opening: 1, travel: 0 }],
-  ["travel begins", { time: 2.6, opening: 1, travel: 0.12 }],
-  ["travel crosses viewport", { time: 3.2, opening: 1, travel: 0.65 }],
-  ["full reveal", { time: 3.55, opening: 1, travel: 1 }],
+  ["title collapses", { time: 0.4, opening: 0, travel: 0 }],
+  ["bright seed", { time: 0.9, opening: 0, travel: 0 }],
+  ["seed becomes opening", { time: 1.1, opening: 0.015, travel: 0 }],
+  ["opening expands", { time: 1.6, opening: 0.55, travel: 0 }],
+  ["open circle", { time: 2.05, opening: 1, travel: 0 }],
+  ["ebb contraction", { time: 2.4, opening: 0.92, travel: 0 }],
+  ["ebb expansion", { time: 2.75, opening: 1.035, travel: 0 }],
+  ["ebb settles", { time: 3.05, opening: 1, travel: 0 }],
+  ["travel begins", { time: 3.35, opening: 1, travel: 0.12 }],
+  ["travel crosses viewport", { time: 3.95, opening: 1, travel: 0.65 }],
+  ["full reveal", { time: 4.3, opening: 1, travel: 1 }],
 ];
 
 function surface(width, height, dpr) {
@@ -122,10 +123,10 @@ test("a resized backing surface immediately restores the same aperture guarantee
   }
 });
 
-test("bitmap letters are actually painted while the aperture remains clear", () => {
+test("bitmap letters remain visible while collapsing into the seed", () => {
   const width = 800;
   const height = 500;
-  const state = { time: 0.65, opening: 0.3, travel: 0 };
+  const state = { time: 0.45, opening: 0, travel: 0 };
   const withLetters = surface(width, height, 1);
   const withoutLetters = surface(width, height, 1);
   paintPortal(withLetters.ctx, width, height, state, letters);
@@ -136,6 +137,34 @@ test("bitmap letters are actually painted while the aperture remains clear", () 
   for (let i = 0; i < painted.length; i += 4) {
     if (painted[i] !== empty[i] || painted[i + 1] !== empty[i + 1] || painted[i + 2] !== empty[i + 2]) changed++;
   }
-  assert.ok(changed > 100, "nonempty bitmap glyphs must visibly join the swirl");
+  assert.ok(changed > 100, "nonempty bitmap glyphs must remain visible during collapse");
   assertAperture(withLetters.canvas, withLetters.ctx, width, height, 1, state, "visible bitmap letters");
+});
+
+
+test("the title contracts toward the dot and finishes before the portal opens", () => {
+  const width = 800;
+  const height = 500;
+  let previousExtent = Infinity;
+  for (const time of [0, 0.4, 0.7, 0.9, 1.05]) {
+    const state = { time, opening: 0, travel: 0 };
+    const withLetters = surface(width, height, 1);
+    const withoutLetters = surface(width, height, 1);
+    paintPortal(withLetters.ctx, width, height, state, letters);
+    paintPortal(withoutLetters.ctx, width, height, state);
+    const painted = withLetters.ctx.getImageData(0, 0, width, height).data;
+    const empty = withoutLetters.ctx.getImageData(0, 0, width, height).data;
+    let extent = 0;
+    for (let i = 0; i < painted.length; i += 4) {
+      if (painted[i] === empty[i] && painted[i + 1] === empty[i + 1] && painted[i + 2] === empty[i + 2]) continue;
+      const pixel = i / 4;
+      extent = Math.max(extent, Math.hypot(pixel % width - width / 2, Math.floor(pixel / width) - height / 2));
+    }
+    if (time < 0.85) {
+      assert.ok(extent > 0 && extent < previousExtent, "visible title must contract toward center, never orbit outward");
+    } else {
+      assert.equal(extent, 0, "no title fragments should remain after the dot forms");
+    }
+    previousExtent = extent;
+  }
 });

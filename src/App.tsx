@@ -1,4 +1,5 @@
 import { useCallback, useLayoutEffect, useState } from "react";
+import { LivingBackground } from "./effects/LivingBackground";
 import { BootSequence } from "./effects/BootSequence";
 import { useInteraction } from "./hooks/useInteraction";
 import { shouldShowIntro } from "./lib/animation";
@@ -26,6 +27,7 @@ export default function App() {
   }, [hasFinished]);
   return (
     <>
+      <LivingBackground interaction={interaction} introActive={introActive} />
       <BootSequence
         active={introActive}
         onComplete={finishIntro}

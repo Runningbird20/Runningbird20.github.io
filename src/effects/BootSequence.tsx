@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { AccessTitle } from "./AccessTitle";
-import { paintPortal } from "./portalScene";
+import { paintPortal, portalTiming } from "./portalScene";
 import type { PortalLetter, PortalState } from "./portalScene";
 import { animation, rememberIntro } from "../lib/animation";
 import type { InteractionState } from "../hooks/useInteraction";
@@ -187,11 +187,12 @@ export function BootSequence({ active, onComplete, interaction }: Props) {
       const open = (opening: number, duration: number, at: number) => {
         timeline.to(scene, { opening, duration, ease: "sine.inOut" }, portalAt + at);
       };
-      open(1, 1, 0.3);
-      open(0.92, 0.35, 1.3);
-      open(1.035, 0.35, 1.65);
-      open(1, 0.3, 2);
-      timeline.to(scene, { travel: 1, duration: 1.25, ease: "power3.in" }, portalAt + 2.3);
+      const openAt = portalTiming.openAt;
+      open(1, 1, openAt);
+      open(0.92, 0.35, openAt + 1);
+      open(1.035, 0.35, openAt + 1.35);
+      open(1, 0.3, openAt + 1.7);
+      timeline.to(scene, { travel: 1, duration: 1.25, ease: "power3.in" }, portalAt + openAt + 2);
       timeline.to(".boot-skip", { opacity: 0, duration: 0.2 }, finishAt - 0.35);
     }, element);
     const key = (event: KeyboardEvent) => {
