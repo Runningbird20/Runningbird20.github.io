@@ -3,7 +3,7 @@ import test from "node:test";
 import { createCanvas } from "@napi-rs/canvas";
 import { paintPortal, portalGeometry } from "../src/effects/portalScene.ts";
 
-// Real bitmap-shaped glyphs collapse into the seed before the opening appears.
+// Real bitmap-shaped glyphs fade around the seed before the opening appears.
 // An empty letter list would miss regressions in that drawing layer.
 const glyphPixels = ["01110", "10001", "10001", "11111", "10001", "10001", "10001"]
   .flatMap((row, y) => Array.from(row).flatMap((pixel, x) => pixel === "1" ? [{ x, y }] : []));
@@ -18,7 +18,7 @@ const letters = Array.from({ length: 13 }, (_, i) => ({
 const phases = [
   ["terminal cover", { time: -1, opening: 0, travel: 0 }],
   ["portal start", { time: 0, opening: 0, travel: 0 }],
-  ["title collapses", { time: 0.4, opening: 0, travel: 0 }],
+  ["title fades", { time: 0.4, opening: 0, travel: 0 }],
   ["bright seed", { time: 0.9, opening: 0, travel: 0 }],
   ["seed becomes opening", { time: 1.1, opening: 0.015, travel: 0 }],
   ["opening expands", { time: 1.6, opening: 0.55, travel: 0 }],
@@ -123,7 +123,7 @@ test("a resized backing surface immediately restores the same aperture guarantee
   }
 });
 
-test("bitmap letters remain visible while collapsing into the seed", () => {
+test("bitmap letters remain visible during the fade", () => {
   const width = 800;
   const height = 500;
   const state = { time: 0.45, opening: 0, travel: 0 };
@@ -142,10 +142,10 @@ test("bitmap letters remain visible while collapsing into the seed", () => {
 });
 
 
-test("the title contracts toward the dot and finishes before the portal opens", () => {
+test("the title keeps its size while fading and finishes before the portal opens", () => {
   const width = 800;
   const height = 500;
-  let previousExtent = Infinity;
+  let initialExtent = 0;
   for (const time of [0, 0.4, 0.7, 0.9, 1.05]) {
     const state = { time, opening: 0, travel: 0 };
     const withLetters = surface(width, height, 1);
@@ -160,11 +160,16 @@ test("the title contracts toward the dot and finishes before the portal opens", 
       const pixel = i / 4;
       extent = Math.max(extent, Math.hypot(pixel % width - width / 2, Math.floor(pixel / width) - height / 2));
     }
-    if (time < 0.85) {
-      assert.ok(extent > 0 && extent < previousExtent, "visible title must contract toward center, never orbit outward");
+    if (time === 0) {
+      initialExtent = extent;
+      assert.ok(initialExtent > 0, "title must begin visible");
+    } else if (time < 0.85) {
+      assert.ok(
+        extent > initialExtent * 0.95,
+        "visible title must retain its original size while fading",
+      );
     } else {
-      assert.equal(extent, 0, "no title fragments should remain after the dot forms");
+      assert.equal(extent, 0, "no title fragments should remain after the fade");
     }
-    previousExtent = extent;
   }
 });

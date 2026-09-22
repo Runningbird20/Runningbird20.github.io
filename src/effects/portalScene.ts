@@ -13,7 +13,7 @@ export interface PortalLetter {
 }
 
 export const portalTiming = {
-  collapseDuration: 0.85,
+  fadeDuration: 0.85,
   openAt: 1.05,
 } as const;
 
@@ -78,26 +78,52 @@ export function paintPortal(
       ctx.stroke();
     }
 
-    // Collapse the complete title into one point before the aperture opens.
-    // Keeping every glyph on the same scale preserves the words as they shrink.
-    const collapse = clamp(state.time / portalTiming.collapseDuration);
-    const remaining = 1 - collapse * collapse;
+    // Keep the title at its original size while it glitches and fades away.
+    const fade = clamp(state.time / portalTiming.fadeDuration);
+    const remaining = 1 - fade * fade;
     letters.forEach((letter, i) => {
       if (remaining <= 0 || letter.pixels.length === 0) return;
       const dx = letter.x * width - x;
       const dy = letter.y * height - y;
+      // Keep the title unstable until its last visible frame. The stepped,
+      // deterministic offsets preserve the glitch without introducing flicker.
+      const glitchFrame = Math.floor(state.time * 18);
+      const glitchX = Math.sin((glitchFrame + i * 3) * 2.17) * 4;
+      const glitchY = Math.cos((glitchFrame + i * 5) * 1.73) * 2.5;
       ctx.save();
-      ctx.translate(x + dx * remaining, y + dy * remaining);
-      ctx.scale(remaining, remaining);
-      ctx.globalAlpha = 1;
+      ctx.translate(
+        x + dx + glitchX,
+        y + dy + glitchY,
+      );
       const start = [211, 255, 227];
       const target = i % 2 ? [199, 121, 214] : [99, 214, 229];
-      ctx.fillStyle = `rgb(${start.map((value, channel) => Math.round(value + (target[channel] - value) * collapse)).join(",")})`;
       const pixelWidth = letter.width * width / 5;
       const pixelHeight = letter.height * height / 7;
-      for (const pixel of letter.pixels) {
-        ctx.fillRect((pixel.x - 2.5) * pixelWidth, (pixel.y - 3.5) * pixelHeight, pixelWidth, pixelHeight);
-      }
+      const drawPixels = (color: string, alpha: number, channelOffset: number) => {
+        ctx.fillStyle = color;
+        ctx.globalAlpha = remaining * alpha;
+        for (const pixel of letter.pixels) {
+          // Shift alternating bitmap rows on discrete frames so the 8-bit
+          // breakup remains visible for the full duration of the fade.
+          const slice = (pixel.y + glitchFrame + i) % 4 === 0
+            ? (glitchFrame % 2 ? 1 : -1) * pixelWidth * 0.7
+            : 0;
+          ctx.fillRect(
+            (pixel.x - 2.5) * pixelWidth + slice + channelOffset,
+            (pixel.y - 3.5) * pixelHeight,
+            pixelWidth,
+            pixelHeight,
+          );
+        }
+      };
+      const channelSpread = (glitchFrame % 2 ? 1 : -1) * Math.max(2, pixelWidth * 0.22);
+      drawPixels("#63d6e5", 0.48, -channelSpread);
+      drawPixels("#c779d6", 0.42, channelSpread);
+      drawPixels(
+        `rgb(${start.map((value, channel) => Math.round(value + (target[channel] - value) * fade)).join(",")})`,
+        1,
+        0,
+      );
       ctx.restore();
     });
 
@@ -120,7 +146,7 @@ export function paintPortal(
     }
     ctx.restore();
 
-    // The collapsed letters charge the dot; its light persists until the rim opens.
+    // The fading letters charge the dot; its light persists until the rim opens.
     const seedOpacity = clamp((state.time - 0.35) / 0.5)
       * (1 - clamp((state.time - portalTiming.openAt) / 0.25));
     if (seedOpacity > 0) {

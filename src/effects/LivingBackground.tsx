@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
 import type { RefObject } from "react";
 import type { InteractionState } from "../hooks/useInteraction";
+import { particleDisplacement } from "../lib/cursorPhysics";
 
 interface Props {
   interaction: RefObject<InteractionState>;
@@ -80,10 +81,15 @@ export function LivingBackground({ interaction, introActive }: Props) {
         if (moving && pointerPresent && !state.device.coarsePointer) {
           const dx = state.cursor.x - x;
           const dy = state.cursor.y - y;
-          const distance = Math.hypot(dx, dy);
-          const pull = Math.max(0, 1 - distance / 180) * 0.06;
-          x += dx * pull;
-          y += dy * pull;
+          const displacement = particleDisplacement(
+            dx,
+            dy,
+            state.pointer.down,
+            state.cursor.speed,
+            particle.phase,
+          );
+          x += displacement.x;
+          y += displacement.y;
         }
         return { ...particle, x, y };
       });
@@ -185,7 +191,7 @@ export function LivingBackground({ interaction, introActive }: Props) {
         <div className="ambient-shade" />
       </div>
       {!introActive && !reducedMotion && (
-        <button className="background-toggle" onClick={() => setPaused((value) => !value)}
+        <button className="background-toggle" data-magnetic onClick={() => setPaused((value) => !value)}
           aria-label={paused ? "Resume background animation" : "Pause background animation"}
           title={paused ? "Resume background animation" : "Pause background animation"}>
           {paused ? <Play size={12} /> : <Pause size={12} />}
@@ -195,4 +201,3 @@ export function LivingBackground({ interaction, introActive }: Props) {
     </>
   );
 }
-

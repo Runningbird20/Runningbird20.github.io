@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "typecheck": "tsc -b",
     "lint": "eslint . --max-warnings 0",
+    "test:cursor": "node --experimental-strip-types --test tests/cursorPhysics.test.mjs",
     "test:portal": "node --experimental-strip-types --test tests/portalScene.test.mjs"
   },
   "dependencies": {

@@ -28,6 +28,7 @@ export function Navbar() {
       <div className="nav-inner">
         <a
           className="wordmark"
+          data-magnetic
           href="#home"
           aria-label={`${portfolio.name}, home`}
         >
@@ -37,6 +38,7 @@ export function Navbar() {
         <button
           ref={toggle}
           className="menu-toggle"
+          data-magnetic
           aria-expanded={open}
           aria-controls="main-nav"
           aria-label={open ? "Close menu" : "Open menu"}
@@ -52,6 +54,7 @@ export function Navbar() {
           {links.map((link) => (
             <a
               key={link}
+              data-magnetic
               href={`#${link.toLowerCase()}`}
               onClick={() => setOpen(false)}
             >
