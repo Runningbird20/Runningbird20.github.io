@@ -55,13 +55,13 @@ export interface Portfolio {
 }
 // Replace REPLACE_ME values. Missing/placeholder destinations render as disabled controls.
 export const portfolio: Portfolio = {
-  name: "Your Name",
-  initials: "YN",
+  name: "Cristal",
+  initials: "C",
   email: "REPLACE_ME@example.com",
   githubUrl: "https://github.com/REPLACE_ME",
   linkedinUrl: "https://www.linkedin.com/in/REPLACE_ME",
   resumeUrl: "REPLACE_ME",
-  roles: ["Software Developer.", "Security Engineering."],
+  roles: ["Software Developer", "Security Engineer"],
   introduction:
     "Georgia Tech student exploring the intersection of software and security. I’m interested in building reliable systems and solving problems that matter.",
   about: [
@@ -69,9 +69,9 @@ export const portfolio: Portfolio = {
     "My focus spans software development and security engineering. I enjoy learning new technologies, understanding the tradeoffs behind a design, and turning challenging problems into thoughtful, practical solutions.",
   ],
   seo: {
-    title: "Your Name — Software & Security Engineering",
+    title: "Cristal — Software, Security & ML",
     description:
-      "The portfolio of Your Name, a Georgia Tech student interested in software development, cybersecurity, and reliable systems.",
+      "The portfolio of Cristal, a Computer Science student at Georgia Tech.",
   },
   experience: [
     {

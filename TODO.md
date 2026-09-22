@@ -239,26 +239,29 @@ cursor.state
 
 Implement:
 
-- [ ] Custom desktop cursor
-- [ ] Smooth cursor interpolation
-- [ ] Cursor velocity calculation
-- [ ] Cursor attraction
-- [ ] Cursor repulsion
-- [ ] Particle displacement
-- [ ] Hover distortion
-- [ ] Magnetic buttons
-- [ ] Cursor state transitions
-- [ ] Disable custom cursor on touch devices
+- [x] Custom desktop cursor
+- [x] Smooth cursor interpolation
+- [x] Cursor velocity calculation
+- [x] Cursor attraction
+- [x] Cursor repulsion
+- [x] Particle displacement
+- [x] Hover distortion
+- [x] Magnetic buttons
+- [x] Cursor state transitions
+- [x] Disable custom cursor on touch devices
 
 Cursor states:
 
 ```text
-DEFAULT → ○
-PROJECT → VIEW
+DEFAULT → translucent gray outline + soft neutral halo
+PROJECT LINK → VIEW
 GITHUB → CODE
-LINK → GO
-CLICK → ◎
+EXTERNAL LINK → OPEN
+BUTTON / INTERNAL LINK → brighter halo
+CLICK → brief ring + pointer press
 ```
+
+Custom cursor falls back to native controls for touch, reduced motion, forced colors, editable fields, disabled links, and keyboard navigation. The pointer stays at the true click position; only its light trails.
 
 Do not sacrifice normal click behavior or accessibility.
 

@@ -41,6 +41,7 @@ export function ResourceLink({
   return (
     <a
       href={destination}
+      data-magnetic
       className={className}
       aria-label={label}
       target={external ? "_blank" : undefined}

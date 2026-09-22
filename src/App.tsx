@@ -1,7 +1,9 @@
 import { useCallback, useLayoutEffect, useState } from "react";
+import { CustomCursor } from "./effects/CustomCursor";
 import { LivingBackground } from "./effects/LivingBackground";
 import { BootSequence } from "./effects/BootSequence";
 import { useInteraction } from "./hooks/useInteraction";
+import { usePointerPhysics } from "./hooks/usePointerPhysics";
 import { shouldShowIntro } from "./lib/animation";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
@@ -16,6 +18,7 @@ import { Footer } from "./components/Footer";
 export default function App() {
   const interaction = useInteraction();
   const [introActive, setIntroActive] = useState(shouldShowIntro);
+  usePointerPhysics(!introActive);
   const [hasFinished, setHasFinished] = useState(false);
   const finishIntro = useCallback(() => {
     setIntroActive(false);
@@ -27,6 +30,7 @@ export default function App() {
   }, [hasFinished]);
   return (
     <>
+      <CustomCursor enabled={!introActive} interaction={interaction} />
       <LivingBackground interaction={interaction} introActive={introActive} />
       <BootSequence
         active={introActive}

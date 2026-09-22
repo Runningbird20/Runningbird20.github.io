@@ -77,6 +77,7 @@ export function ProjectCard({
 }) {
   return (
     <article
+      data-hover-art
       className={`project-card ${project.featured ? "featured-project" : ""}`}
     >
       <div className="project-art-wrap">
