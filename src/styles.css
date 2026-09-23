@@ -23,7 +23,6 @@
 }
 html {
   scrollbar-gutter: stable;
-  scroll-behavior: smooth;
   scroll-padding-top: 104px;
 }
 body {
@@ -513,75 +512,171 @@ img {
 .heading-row > .text-link {
   color: #b8bbc5;
 }
-.experience-card {
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  margin-top: 40px;
-  padding: 30px 0 0;
-  border-top: 1px solid var(--border);
-  gap: 40px;
+/* Horizontal Experience Timeline */
+.experience-section {
+  width: 100%;
 }
-.experience-dates {
+
+.experience-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.timeline-hint-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  color: var(--accent);
+  background: rgba(99, 214, 229, 0.08);
+  border: 1px solid rgba(99, 214, 229, 0.22);
+  border-radius: 999px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.experience-timeline-container {
   position: relative;
-  padding-left: 22px;
+  width: 100%;
+  margin-top: 32px;
+  overflow: visible;
+}
+
+.experience-timeline-axis {
+  position: relative;
+  width: 100%;
+  height: 2px;
+  margin-bottom: 24px;
+}
+
+.axis-line {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+}
+
+.axis-line-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: var(--axis-fill, 0%);
+  background: linear-gradient(90deg, var(--accent), #e292ff);
+  box-shadow: 0 0 10px var(--accent), 0 0 20px rgba(99, 214, 229, 0.4);
+  border-radius: 999px;
+  transition: width 0.04s linear;
+}
+
+.experience-timeline-track {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 36px;
+  will-change: transform;
+  transform: translate3d(calc(-1 * var(--timeline-progress, 0) * var(--max-travel, 0px)), 0, 0);
+  transition: transform 0.04s linear;
+}
+
+.experience-timeline-card {
+  flex: 0 0 440px;
+  width: 440px;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.card-timeline-node {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.node-pip {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent), 0 0 14px rgba(99, 214, 229, 0.5);
+  flex-shrink: 0;
+}
+
+.node-step {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 1.2px;
+  color: #8c98aa;
+}
+
+.experience-dates {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
   font-size: 12px;
   color: #c7c9d0;
-  line-height: 1.7;
+  line-height: 1.5;
+  padding-left: 0;
 }
-.timeline-dot {
-  position: absolute;
-  top: 7px;
-  left: 0;
-  width: 6px;
-  height: 6px;
-  background: var(--accent);
-  border-radius: 50%;
-}
-.experience-dates > span:last-child {
-  display: flex;
-  gap: 6px;
+
+.experience-date-badge,
+.experience-location-badge {
+  display: inline-flex;
   align-items: center;
-  color: #898c96;
-  margin-top: 8px;
+  gap: 5px;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   font-size: 11px;
+  color: #8f9aa9;
+  margin: 0;
 }
-.example-label {
-  display: inline-block;
-  font:
-    9px ui-monospace,
-    monospace;
-  color: #adb0ba;
-  border: 1px solid #3a3d47;
-  background: #1b1d24;
-  border-radius: 3px;
-  padding: 4px 7px;
-  line-height: 1.4;
+
+.experience-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
-.experience-body h3 {
-  font-size: 21px;
-  font-weight: 500;
-  letter-spacing: -0.4px;
-  margin-top: 14px;
+
+.experience-role-title {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: #f0f4fc;
+  margin: 4px 0 0;
 }
+
 .organization {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 13px;
   color: var(--accent);
-  margin-top: 6px;
+  margin: 2px 0 0;
 }
-.description {
+
+.org-icon {
+  flex-shrink: 0;
+}
+
+.experience-body .description {
   font-size: 13px;
-  color: var(--muted);
-  line-height: 1.85;
+  color: #929dad;
+  line-height: 1.65;
+  margin: 6px 0 0;
 }
-.experience-body > .description {
-  margin-top: 17px;
-}
+
 .accomplishments {
-  padding-left: 17px;
-  margin: 14px 0 22px;
-  font-size: 13px;
-  color: var(--muted);
-  line-height: 1.85;
+  padding-left: 16px;
+  margin: 6px 0 12px;
+  font-size: 12.5px;
+  color: #c0c8d6;
+  line-height: 1.6;
   list-style: disc;
 }
 .accomplishments li {
@@ -1054,8 +1149,9 @@ img {
   .project-content h3 {
     font-size: 17px;
   }
-  .experience-card {
-    grid-template-columns: 220px 1fr;
+  .experience-timeline-card {
+    flex: 0 0 400px;
+    width: 400px;
   }
   .education-card {
     flex-wrap: wrap;
@@ -1181,13 +1277,17 @@ img {
     flex-wrap: wrap;
     gap: 10px;
   }
-  .experience-card {
-    grid-template-columns: 1fr;
-    gap: 24px;
-    margin-top: 24px;
+  .experience-header-actions {
+    flex-wrap: wrap;
+    gap: 8px;
   }
-  .experience-body h3 {
-    font-size: 20px;
+  .experience-timeline-card {
+    flex: 0 0 calc(100vw - 64px);
+    width: calc(100vw - 64px);
+    max-width: 380px;
+  }
+  .experience-role-title {
+    font-size: 18px;
   }
   .project-grid {
     grid-template-columns: 1fr;
@@ -1325,20 +1425,22 @@ img {
 }
 .background-toggle {
   position: fixed;
-  bottom: 18px;
-  left: 18px;
+  top: 24px;
+  left: 28px;
   z-index: 35;
   display: flex;
   align-items: center;
   gap: 8px;
-  min-height: 44px;
-  padding: 0 13px;
+  min-height: 36px;
+  padding: 0 14px;
   border: 1px solid #63d6e533;
   border-radius: 24px;
   background: #0b0e18eb;
   color: #b9c5d8;
   font: 10px ui-monospace, SFMono-Regular, Consolas, monospace;
   cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 .background-toggle:hover {
   border-color: var(--accent-secondary);
@@ -1374,7 +1476,7 @@ img {
   background: radial-gradient(ellipse at center bottom, #c779d616, transparent 70%);
 }
 @media (max-width: 767px) {
-  .background-toggle { left: 10px; bottom: 10px; padding: 0 12px; }
+  .background-toggle { left: 16px; top: 16px; bottom: auto; padding: 0 10px; min-height: 32px; }
   .background-toggle span { display: none; }
   .ambient-field { width: 150vw; }
 }
@@ -1786,4 +1888,402 @@ img {
 }
 @media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce), (forced-colors: active) {
   .custom-cursor { display: none; }
+}
+
+/* ==========================================================================
+   3D Spatial Scroll Journey Corridor (Z-Axis Depth Engine)
+   ========================================================================== */
+
+.scroll-journey {
+  position: relative;
+  width: 100%;
+}
+
+.journey-scroll-track {
+  width: 100%;
+  pointer-events: none;
+}
+
+.journey-viewport {
+  position: fixed;
+  inset: 0;
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Corridor visual depth cues: horizon rings & perspective grid */
+.tunnel-corridor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 900px;
+}
+
+.tunnel-ring {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  border: 1px dashed rgba(99, 214, 229, 0.12);
+  will-change: transform;
+}
+
+.tunnel-ring-1 {
+  width: 48vw;
+  height: 48vw;
+  border-color: rgba(99, 214, 229, 0.08);
+  animation: tunnel-spin 40s linear infinite;
+}
+
+.tunnel-ring-2 {
+  width: 82vw;
+  height: 82vw;
+  border-color: rgba(199, 121, 214, 0.07);
+  animation: tunnel-spin 60s linear infinite reverse;
+}
+
+.tunnel-ring-3 {
+  width: 125vw;
+  height: 125vw;
+  border-color: rgba(99, 214, 229, 0.05);
+  animation: tunnel-spin 90s linear infinite;
+}
+
+@keyframes tunnel-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.tunnel-grid {
+  display: none;
+}
+
+/* 3D Stages World */
+.journey-stage-world {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+.journey-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transform-style: preserve-3d;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  backface-visibility: hidden;
+}
+
+.journey-stage-inner {
+  width: min(1180px, calc(100% - 96px));
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  pointer-events: none;
+  margin-inline: auto;
+}
+
+.journey-stage,
+.journey-stage-inner,
+.stage-card-scroller {
+  pointer-events: none;
+}
+
+/* When stage is in focal plane, only interactive controls receive pointer events */
+.journey-stage[data-focal="true"] a,
+.journey-stage[data-focal="true"] button,
+.journey-stage[data-focal="true"] input,
+.journey-stage[data-focal="true"] textarea,
+.journey-stage[data-focal="true"] select,
+.journey-stage[data-focal="true"] [role="button"],
+.journey-stage[data-focal="true"] [tabindex] {
+  pointer-events: auto;
+}
+
+.stage-card-scroller {
+  width: 100%;
+  padding: 10px 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  scrollbar-width: none;
+}
+
+.stage-card-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+/* Stage internal section resets */
+.journey-stage .section {
+  border-bottom: none;
+  padding-block: 16px 24px;
+}
+
+.journey-stage .hero {
+  padding-top: 16px;
+  padding-bottom: 24px;
+}
+
+.contact-stage-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.contact-stage-wrap .contact-section {
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+.contact-stage-wrap .footer {
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+
+/* ==========================================================================
+   Futuristic Spatial Telemetry HUD
+   ========================================================================== */
+
+.spatial-hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 32;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+/* Bottom-left telemetry chip */
+.hud-telemetry {
+  position: absolute;
+  left: 28px;
+  bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.hud-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.hud-icon {
+  color: var(--accent);
+}
+
+.hud-icon.pulse {
+  animation: hud-pulse 2s ease-in-out infinite;
+}
+
+@keyframes hud-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+.hud-sector {
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  color: #d6e2e9;
+  font-weight: 600;
+}
+
+.hud-depth-readout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 9px;
+  letter-spacing: 1.4px;
+  color: #97a4b2;
+  padding-left: 4px;
+}
+
+.hud-dim {
+  color: #5c6878;
+}
+
+.hud-warp-badge {
+  background: rgba(199, 121, 214, 0.22);
+  color: #f0aeff;
+  border: 1px solid rgba(199, 121, 214, 0.45);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 8px;
+  animation: warp-glow 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes warp-glow {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+
+/* Right-side Waypoint Sector Track */
+.hud-waypoints {
+  position: absolute;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: auto;
+}
+
+.hud-waypoint {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  cursor: pointer;
+  color: #727c8d;
+  transition: color 0.2s ease;
+}
+
+.hud-waypoint:hover {
+  color: #e2f7fa;
+}
+
+.hud-waypoint.is-active {
+  color: var(--accent);
+}
+
+.waypoint-label {
+  font-size: 9px;
+  letter-spacing: 1.4px;
+  opacity: 0.65;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.hud-waypoint:hover .waypoint-label,
+.hud-waypoint.is-active .waypoint-label {
+  opacity: 1;
+  transform: translateX(-2px);
+}
+
+.waypoint-pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #394254;
+  border: 1px solid #4a576e;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.hud-waypoint:hover .waypoint-pip {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.hud-waypoint.is-active .waypoint-pip {
+  background: var(--accent);
+  border-color: #e2f7fa;
+  box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent);
+  transform: scale(1.4);
+}
+
+/* Mobile & Small Screen Adaptations */
+@media (max-width: 767px) {
+  .hud-telemetry {
+    left: 14px;
+    bottom: 14px;
+  }
+  .hud-waypoints {
+    right: 12px;
+    gap: 8px;
+  }
+  .waypoint-label {
+    display: none;
+  }
+  .stage-card-scroller {
+    max-height: 80vh;
+    padding: 18px 14px;
+  }
+  .journey-stage-inner {
+    width: calc(100% - 24px);
+  }
+}
+
+/* Floating Social Links (Bottom-Right) */
+.floating-social-links {
+  position: fixed;
+  right: 28px;
+  bottom: 24px;
+  z-index: 35;
+  display: flex;
+  align-items: center;
+}
+
+.floating-social-links .social-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.floating-social-links .icon-link {
+  display: flex;
+  width: 36px;
+  height: 36px;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: #a2a8b5;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.floating-social-links .icon-link:hover {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 767px) {
+  .floating-social-links {
+    right: 14px;
+    bottom: 14px;
+  }
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .journey-viewport {
+    perspective: none;
+  }
+  .journey-stage {
+    transform: none !important;
+    filter: none !important;
+    transition: opacity 0.25s ease;
+  }
+  .tunnel-corridor {
+    display: none;
+  }
+  .hud-icon.pulse,
+  .hud-bounce,
+  .hud-warp-badge {
+    animation: none;
+  }
 }

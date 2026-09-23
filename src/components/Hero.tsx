@@ -12,8 +12,13 @@ export function Hero() {
           ))}
         </h1>
       </div>
-      <a className="hero-scroll" href="#about" data-magnetic>
-        Scroll to explore <ArrowDown size={14} aria-hidden="true" />
+      <a
+        className="hero-scroll"
+        href="#about"
+        data-magnetic
+        aria-label="Scroll into corridor to explore about sector"
+      >
+        Scroll into corridor <ArrowDown size={14} aria-hidden="true" />
       </a>
     </section>
   );

@@ -53,76 +53,186 @@ export interface Portfolio {
   };
   activities: Activity[];
 }
-// Replace REPLACE_ME values. Missing/placeholder destinations render as disabled controls.
+
 export const portfolio: Portfolio = {
-  name: "Cristal",
-  initials: "C",
-  email: "REPLACE_ME@example.com",
-  githubUrl: "https://github.com/REPLACE_ME",
-  linkedinUrl: "https://www.linkedin.com/in/REPLACE_ME",
-  resumeUrl: "REPLACE_ME",
-  roles: ["Software Developer", "Security Engineer"],
+  name: "Cristal Williams",
+  initials: "CW",
+  email: "wcristal005@gmail.com",
+  githubUrl: "https://github.com/Runningbird20",
+  linkedinUrl: "https://www.linkedin.com/in/cristal-williams-b86758318/",
+  resumeUrl: "#",
+  roles: ["Software Engineer", "Security Engineer"],
   introduction:
-    "Georgia Tech student exploring the intersection of software and security. I’m interested in building reliable systems and solving problems that matter.",
+    "Georgia Tech Computer Science student concentrating in Artificial Intelligence and Cybersecurity. Experienced in distributed backend systems at Google and multi-agent security automation at Expedia Group.",
   about: [
-    "I’m a student at Georgia Tech with an interest in how software is built, how it breaks, and how to make it more dependable.",
-    "My focus spans software development and security engineering. I enjoy learning new technologies, understanding the tradeoffs behind a design, and turning challenging problems into thoughtful, practical solutions.",
+    "I’m a Computer Science student at Georgia Tech in the John H. Martinson Honors Program, focusing on Artificial Intelligence and Cybersecurity.",
+    "My background spans high-throughput backend engineering and security infrastructure. I’ve refactored critical-path Java microservices serving 50M daily users at Google Play and architected autonomous multi-agent incident triage pipelines at Expedia Group.",
+    "I love dissecting complex system architectures, finding performance bottlenecks, and engineering robust, secure software that operates seamlessly at scale.",
   ],
   seo: {
-    title: "Cristal — Software, Security & ML",
+    title: "Cristal Williams — Software & Security Engineering",
     description:
-      "The portfolio of Cristal, a Computer Science student at Georgia Tech.",
+      "The engineering portfolio of Cristal Williams, Computer Science student at Georgia Tech concentrating in AI and Cybersecurity.",
   },
   experience: [
     {
-      id: "example-experience",
-      organization: "Organization name",
-      role: "Software Engineering Role",
-      dates: "Start date — End date",
-      location: "City, State / Remote",
-      placeholder: true,
+      id: "expedia-group",
+      organization: "Expedia Group",
+      role: "Security Engineering Intern",
+      dates: "May 2026 — Jul 2026",
+      location: "Seattle, WA",
       description:
-        "Replace this example with a brief overview of your role, team, and the problem you worked on.",
+        "Architected and deployed an AI-powered Security Incident Reporting Agent on Glean's agent platform, replacing manual ServiceNow forms and automating security triage.",
       accomplishments: [
-        "Describe a feature or system you built and your contribution.",
-        "Explain a technical challenge, the approach you took, and the outcome.",
-        "Include a measurable result only when you have evidence for it.",
+        "Architected and deployed an AI-powered Security Incident Reporting Agent on Glean's agent platform, replacing a manual ServiceNow form and reducing average intake time across 7 security event categories.",
+        "Engineered a multi-agent system with one primary intake agent and 7 specialized subagents, automating branch-specific email formatting, SOAR platform delivery, and Slack security team alerts, cutting manual triage work by 30% or 20 hours per week.",
+        "Implemented intelligent triage and auto-resolution logic, including IT-redirect detection and known-benign pattern matching, which auto-resolved 25% of incoming tickets without analyst intervention.",
       ],
-      technologies: ["Technology", "Framework", "Tool"],
+      technologies: [
+        "AI Agents",
+        "Glean",
+        "ServiceNow",
+        "SOAR",
+        "Slack API",
+        "Python",
+        "Incident Response",
+      ],
+    },
+    {
+      id: "google",
+      organization: "Google",
+      role: "Software Engineering Intern",
+      dates: "May 2025 — Aug 2025",
+      location: "Mountain View, CA",
+      description:
+        "Refactored critical-path Java backend microservices for the Google Play Store checkout flow serving 50 million daily users.",
+      accomplishments: [
+        "Refactored critical-path Java backend microservices for the Google Play Store checkout flow, serving 50 million daily users, and tuned database queries to reduce latency by 36%.",
+        "Collaborated with product, data, and operations teams to identify performance bottlenecks across 3 high-traffic services, using SQL analysis and pandas profiling to drive faster checkout times.",
+        "Designed and shipped 2 scalable Java microservices, streamlining deployment pipelines and reducing release time from 5 hours to 3.2 hours.",
+      ],
+      technologies: [
+        "Java",
+        "Microservices",
+        "Google Play",
+        "SQL",
+        "Database Tuning",
+        "pandas",
+        "Distributed Systems",
+      ],
+    },
+    {
+      id: "gt-degree-roadmap",
+      organization: "Georgia Institute of Technology",
+      role: "Full-Stack Software Engineer",
+      dates: "Feb 2025 — Present",
+      location: "Atlanta, GA",
+      description:
+        "Built and shipped GT Degree Roadmap, a full-stack degree planning platform used by 1,000 Georgia Tech students.",
+      accomplishments: [
+        "Built and shipped GT Degree Roadmap, a full-stack degree planning platform used by 1,000 Georgia Tech students, enabling real-time requisite visualization and schedule conflict detection.",
+        "Reverse-engineered DegreeWorks PDF transcript structures and built an Oscar web scraper to automate course history ingestion, eliminating 40 hours per week of manual data entry for new users.",
+        "Owned full-stack feature development across the React frontend and Firebase backend, implementing real-time data synchronization that reduced page load time by 60%.",
+      ],
+      technologies: [
+        "React",
+        "TypeScript",
+        "Firebase",
+        "Web Scraping",
+        "PDF Parsing",
+        "Real-Time Data",
+      ],
+    },
+    {
+      id: "gt-student-assistant",
+      organization: "Georgia Institute of Technology",
+      role: "Student Assistant — Automation & Security",
+      dates: "Nov 2024 — Present",
+      location: "Atlanta, GA",
+      description:
+        "Built internal automation tooling and implemented AWS IAM security controls for departmental systems and records.",
+      accomplishments: [
+        "Built internal automation tooling to replace paper-based administrative workflows, reducing document processing turnaround time by 40% and eliminating recurring data-entry errors across 5 departmental operations.",
+        "Designed and implemented AWS IAM access controls and encryption policies to secure confidential student records under FERPA compliance requirements, covering 20,000 records and systems.",
+        "Wrote and optimized SQL queries and automated reporting pipelines, reducing manual reporting time by 90% and improving database integrity across the Material Science and Engineering Department.",
+      ],
+      technologies: [
+        "AWS IAM",
+        "SQL",
+        "Workflow Automation",
+        "FERPA Compliance",
+        "Data Encryption",
+        "Python",
+      ],
     },
   ],
-  skillsAreExamples: true,
+  skillsAreExamples: false,
   skills: [
-    { category: "Languages", items: ["Python", "TypeScript", "Java", "SQL"] },
-    { category: "Frameworks", items: ["React", "Node.js", "FastAPI"] },
     {
-      category: "Security",
-      items: ["Threat modeling", "Secure development", "Network fundamentals"],
+      category: "Languages",
+      items: ["Python", "Java", "TypeScript", "Swift", "C", "C++", "C#", "SQL"],
     },
-    { category: "Cloud / Infrastructure", items: ["Linux", "Docker", "AWS"] },
     {
-      category: "Developer Tools",
-      items: ["Git", "GitHub Actions", "VS Code", "Postman"],
+      category: "Frameworks & Libraries",
+      items: ["React", "FastAPI", "SwiftUI", "Django", "NumPy", "pandas", "PyTorch"],
+    },
+    {
+      category: "Infrastructure & Tools",
+      items: [
+        "AWS",
+        "Google Cloud",
+        "Firebase",
+        "PostgreSQL",
+        "Supabase",
+        "Git",
+        "Docker",
+        "Playwright",
+      ],
+    },
+    {
+      category: "AI & Machine Learning",
+      items: ["LLM Integration", "RAG", "Ollama", "OpenCV", "XGBoost"],
     },
   ],
   education: {
     institution: "Georgia Institute of Technology",
-    degree: "Add your degree / program",
-    graduation: "Add expected graduation",
-    coursework: [],
-    gpa: "",
-    details: "",
+    degree: "Bachelor of Science in Computer Science",
+    graduation: "May 2028",
+    coursework: [
+      "Artificial Intelligence",
+      "Cybersecurity",
+      "Data Structures & Algorithms",
+      "Systems & Networks",
+      "Database Systems",
+    ],
+    gpa: "3.50 / 4.00",
+    details:
+      "Concentration: Artificial Intelligence & Cybersecurity · John H. Martinson Honors Program",
   },
-  // Optional: add real activities here. An empty array hides the entire section.
-  // Example: { name: 'JPMorgan Chase Code for Good', role: 'Your role', date: 'Year', description: 'Describe your actual contribution.' }
   activities: [
     {
-      name: "Engineering activity / hackathon",
-      role: "Your role",
-      date: "Add date",
+      name: "RAG Systems Hackathon",
+      role: "1st Place Winner",
+      date: "2025",
       description:
-        "Replace with an event you attended and explain your contribution, team, and what you built or learned.",
-      placeholder: true,
+        "Won 1st place building a full-stack media platform with social tracking, collaborative lists, and a RAG-powered chatbot combining live web search with user-context signals for personalized recommendations.",
+      placeholder: false,
+    },
+    {
+      name: "Objects & Design Class Project",
+      role: "2nd Place Winner",
+      date: "2024",
+      description:
+        "Awarded 2nd place for building an AI-powered recruiting platform with automated resume parsing, skill-based candidate matching, and geospatial applicant clustering.",
+      placeholder: false,
+    },
+    {
+      name: "John H. Martinson Honors Program",
+      role: "Honors Scholar",
+      date: "2024 — Present",
+      description:
+        "Selected for Georgia Tech's rigorous honors program, participating in interdisciplinary academic research, leadership initiatives, and specialized seminars.",
+      placeholder: false,
     },
   ],
 };

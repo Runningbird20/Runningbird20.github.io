@@ -73,6 +73,27 @@ export function LivingBackground({ interaction, introActive }: Props) {
           -0.35 + t * 0.012 + view.scroll * 0.5, 0, Math.PI * 2);
         ctx.stroke();
       }
+
+      // 3D portal tunnel rings expanding outward as camera flies forward into depth
+      const ringCount = 4;
+      for (let i = 0; i < ringCount; i++) {
+        const ringProgress = ((i / ringCount) + view.scroll * 2.8) % 1;
+        const ringRadius = ringProgress * (Math.max(width, height) * 0.72) + 20;
+        const ringAlpha = Math.sin(ringProgress * Math.PI) * 0.16;
+        if (ringAlpha > 0.01) {
+          ctx.lineWidth = 1 + ringProgress * 1.4;
+          ctx.strokeStyle = i % 2 === 0 ? `rgba(99, 214, 229, ${ringAlpha})` : `rgba(199, 121, 214, ${ringAlpha})`;
+          ctx.beginPath();
+          ctx.arc(
+            width * 0.5 + view.x * 35 * (1 - ringProgress),
+            height * 0.5 + view.y * 25 * (1 - ringProgress),
+            ringRadius,
+            0,
+            Math.PI * 2
+          );
+          ctx.stroke();
+        }
+      }
       const points = particles.map((particle) => {
         let x = wrap(particle.x * width + Math.sin(t * 0.09 + particle.phase) * 22
           + view.x * 38 * particle.depth + view.scroll * 55 * particle.depth, width);
